@@ -78,7 +78,7 @@ export default class MyImgLib {
     console.log('Uploaded', { success, link: data.link, deletehash: data.deletehash })
 
     if (!success) {
-      console.error("Something went wrong during upload", data);
+      console.error("Something went wrong during upload", response);
       throw new Error("Cannot upload image");
     }
   }
