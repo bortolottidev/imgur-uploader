@@ -16,7 +16,16 @@ import { deleteFile, readFileContentBase64, readAssetsFiles } from './file-utils
 
     if (isVideo) {
       console.info("Uploading video: " + file);
-      await images.uploadVideo(file);
+      let err = null;
+      await images.uploadVideo(file)
+        .catch(error => {
+          err = error;
+        });
+
+      if (err) {
+        console.error("Skipping video upload: " + file);
+        continue;
+      } 
     }
 
     console.info("Deleting...", file);
