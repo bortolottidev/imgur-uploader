@@ -3,26 +3,26 @@ import imgur from 'imgur';
 import { readAsStream } from './file-utils.js';
 const { ImgurClient } = imgur;
 
-const ALBUM_API = "https://api.imgur.com/3/account/me/albums/0";
-const UPLOAD_API = "https://api.imgur.com/3/image";
+export const ALBUM_API = "https://api.imgur.com/3/account/me/albums/0";
+export const UPLOAD_API = "https://api.imgur.com/3/image";
 const VIDEO_ALBUM_TITLE = process.env.VIDEO_ALBUM_TITLE || "Videos";
 const PICTURE_ALBUM_TITLE = process.env.PICTURE_ALBUM_TITLE || "Pictures";
 
-const prepareTokenHeader = () => { 
+const prepareTokenHeader = () => {
   const myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${process.env.IMGUR_BEARER_TOKEN}`);
 
   return myHeaders;
 }
 
-const client = new ImgurClient({ accessToken:  process.env.IMGUR_BEARER_TOKEN });
+const client = new ImgurClient({ accessToken: process.env.IMGUR_BEARER_TOKEN });
 
 export default class MyImgLib {
 
   videoAlbum;
   pictureAlbum;
 
-  async init () {
+  async init() {
     const requestOptions = {
       method: 'GET',
       headers: prepareTokenHeader(),
@@ -41,7 +41,7 @@ export default class MyImgLib {
     assert(this.pictureAlbum !== undefined, "Cannot find picture album");
   }
 
-  async uploadVideo (file) {
+  async uploadVideo(file) {
     const response = await client.upload({
       image: readAsStream(file),
       album: this.videoAlbum.id,
