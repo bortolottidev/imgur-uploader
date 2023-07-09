@@ -1,6 +1,6 @@
 import assert from 'assert';
 import imgur from 'imgur';
-import { readAsStream } from './file-utils.js';
+import { readAsStream, copyToCannotUploadDirectory } from './file-utils.js';
 const { ImgurClient } = imgur;
 
 export const ALBUM_API = "https://api.imgur.com/3/account/me/albums/0";
@@ -21,6 +21,7 @@ export default class MyImgLib {
 
   videoAlbum;
   pictureAlbum;
+  errorCounter = 0;
 
   async init() {
     const requestOptions = {
@@ -50,7 +51,14 @@ export default class MyImgLib {
       type: 'stream',
     });
 
-    this.checkImgurResponse(response);
+    const error = this.checkImgurResponse(response);
+    if (error) {
+      this.errorCounter++;
+      if (this.errorCounter === 4) {
+        throw new Error('Already reached 3 errors in a row, process exit');
+      }
+      await copyToCannotUploadDirectory(file, error);
+    }
   }
 
   async upload(file, fileContentBinary) {
@@ -70,7 +78,14 @@ export default class MyImgLib {
     const response = await fetch(UPLOAD_API, requestOptions)
       .then(response => response.json())
       .catch(error => console.log('error during upload', error));
-    this.checkImgurResponse(response);
+    const error = this.checkImgurResponse(response)
+    if (error) {
+      this.errorCounter++;
+      if (this.errorCounter === 4) {
+        throw new Error('Already reached 3 errors in a row, process exit');
+      }
+      await copyToCannotUploadDirectory(file, error);
+    }
   }
 
   checkImgurResponse(response) {
@@ -79,7 +94,7 @@ export default class MyImgLib {
 
     if (!success) {
       console.error("Something went wrong during upload", response);
-      throw new Error("Cannot upload image");
+      return { msg: "Cannot upload image", response };
     }
   }
 }

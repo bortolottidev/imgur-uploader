@@ -8,7 +8,7 @@ import { deleteFile, readFileContentBase64, readAssetsFiles } from './file-utils
   const files = readAssetsFiles();
   let uploadedNumber = 0;
   let errorVideoNumber = 0;
-  for(const { isVideo, isPicture, file } of files) {
+  for (const { isVideo, isPicture, file } of files) {
     if (isPicture) {
       console.info("Uploading picture: " + file);
       const fileContentBase64 = readFileContentBase64(file);
@@ -27,7 +27,7 @@ import { deleteFile, readFileContentBase64, readAssetsFiles } from './file-utils
         console.error("Skipping video upload: " + file);
         errorVideoNumber++;
         continue;
-      } 
+      }
     }
 
     console.info("Deleting...", file);
@@ -35,7 +35,7 @@ import { deleteFile, readFileContentBase64, readAssetsFiles } from './file-utils
     uploadedNumber++;
   }
 
-  console.info(`Correctly uploaded and deleted ${uploadedNumber} images/videos`);
+  console.info(`Correctly uploaded and deleted ${uploadedNumber - images.errorCounter} images/videos (${images.errorCounter} moved to CANNOT_UPLOAD_DIR)`);
   errorVideoNumber && console.warn(`Cannot upload ${errorVideoNumber} videos`);
 })()
 
